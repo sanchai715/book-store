@@ -17,17 +17,40 @@ describe('Cart API', () => {
   });
 
   it('should calculate cart total with promotions', async () => {
-    const product1 = await Product.create({ name: 'Book 1', price: 100 });
-    const product2 = await Product.create({ name: 'Book 2', price: 100 });
-
-    await request(app).post('/api/cart/add').send({ productId: product1._id, quantity: 1 });
-    await request(app).post('/api/cart/add').send({ productId: product2._id, quantity: 1 });
-
+    const product1 = await Product.create({ name: "Harry Potter and the Philosopher's Stone", price: 100 });
+    const product2 = await Product.create({ name: "Harry Potter and the Chamber of Secrets", price: 100 });
+  
+    // Add items to the cart
+    await request(app).post('/api/cart/add').send({ productId: product1._id, quantity: 2 }); // 2 quantities of product1
+    await request(app).post('/api/cart/add').send({ productId: product2._id, quantity: 1 }); // 1 quantity of product2
+  
+    // Calculate the cart
     const response = await request(app).get('/api/cart/calculate');
+  
+    // Assertions
     expect(response.status).toBe(200);
-    expect(response.body.totalPrice).toBe(200); // 2 books x 100
-    expect(response.body.discount).toBe(20); // 10% discount
-    expect(response.body.finalPrice).toBe(180); // Total - Discount
+    expect(response.body.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          product: expect.objectContaining({
+            _id: product1._id.toString(),
+            name: "Harry Potter and the Philosopher's Stone",
+            price: 100,
+          }),
+          quantity: 2,
+        }),
+        expect.objectContaining({
+          product: expect.objectContaining({
+            _id: product2._id.toString(),
+            name: "Harry Potter and the Chamber of Secrets",
+            price: 100,
+          }),
+          quantity: 1,
+        }),
+      ])
+    );
+    expect(response.body.discount).toBe(20); // Given discount
+    expect(response.body.finalPrice).toBe(280); // Total price - Discount
   });
 
   it('should clear the cart', async () => {

@@ -15,6 +15,9 @@ const limiter = rateLimit({
 });
 const app = express();
 
+const corsOptions = {
+  origin: ['http://localhost:3000'], // Allow frontend during development
+};
 // Middleware
 app.use(express.json());
 app.use(cors());

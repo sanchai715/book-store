@@ -38,8 +38,8 @@ This project is a backend API for a book store called **“บ้านนาย
 
 ### 2. Clone the Repository
 ```bash
-git clone <repository-url>
-cd backend
+git clone https://github.com/SanchaiN-Dev/book-store.git
+cd book-store/backend
 ```
 
 ---

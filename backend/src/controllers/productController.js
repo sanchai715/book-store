@@ -21,9 +21,32 @@ exports.createProduct = async (req, res) => {
 // Get Products
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    logger.info(`Fetched ${products.length} products`);
-    res.status(200).json(products);
+    const { page, limit } = req.query; // Extract query parameters
+    const pageNumber = page ? parseInt(page, 10) : 1; // Default to page 1
+    const limitNumber = limit ? parseInt(limit, 10) : 10; // Default to 10 items per page
+
+    if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber <= 0 || limitNumber <= 0) {
+      return res.status(400).json({ message: "Invalid pagination parameters" });
+    }
+
+    const skip = (pageNumber - 1) * limitNumber; // Calculate the number of documents to skip
+    const totalProducts = await Product.countDocuments(); // Get the total number of products
+    const totalPages = Math.ceil(totalProducts / limitNumber); // Calculate total pages
+
+    const products = await Product.find()
+      .skip(skip)
+      .limit(limitNumber);
+
+    logger.info(
+      `Fetched ${products.length} products for page ${pageNumber} with limit ${limitNumber}`
+    );
+
+    res.status(200).json({
+      data: products,
+      currentPage: pageNumber,
+      totalPages,
+      totalProducts,
+    });
   } catch (error) {
     logger.error(`Error fetching products: ${error.message}`);
     res.status(500).json({ message: error.message });

@@ -41,11 +41,12 @@ exports.calculateCart = async (req, res) => {
     const discount = calculateDiscount(itemGroups);
     const totalPrice = totalItems * 100;
     const finalPrice = totalPrice - discount;
+    const items = cart.items;
 
     res.status(200).json({
-      totalPrice,
+      items,
       discount,
-      finalPrice,
+      finalPrice
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

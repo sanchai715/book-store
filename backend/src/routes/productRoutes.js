@@ -8,9 +8,9 @@ const {
 
 const router = express.Router();
 
-router.post('/', createProduct);       // Create Product
-router.get('/', getProducts);         // Get Products with Pagination
-router.put('/:id', updateProduct);    // Update Product
-router.delete('/:id', deleteProduct); // Delete Product
+router.post('/', createProduct);
+router.get('/', getProducts);
+router.put('/:id', updateProduct);
+router.delete('/:id', deleteProduct);
 
 module.exports = router;
